@@ -7,6 +7,7 @@ import { categoryRouter } from './categories';
 import { reviewRouter } from './reviews';
 import { articleRouter } from './articles';
 import { storeRouter } from './store';
+import { contactRouter } from './contact';
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use(`${test_api}/category`, categoryRouter);
 router.use(`${test_api}/review`, reviewRouter);
 router.use(`${test_api}/article`, articleRouter);
 router.use(`${test_api}/store`, storeRouter);
+router.use(`${test_api}/contact`, contactRouter);
 
 export default router;
