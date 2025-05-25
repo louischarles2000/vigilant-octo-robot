@@ -50,6 +50,7 @@ export default {
       const baseQuery = `
         FROM ${tables.product} prod
         JOIN ${tables.product_description} prod_desc ON prod.product_id = prod_desc.product_id
+        JOIN ${tables.seo_url} seo ON prod.product_id = seo.value AND seo.key = 'product_id'
         LEFT JOIN ${tables.product_to_category} prod_to_cat ON prod.product_id = prod_to_cat.product_id
         LEFT JOIN ${tables.category_description} cat_desc ON prod_to_cat.category_id = cat_desc.category_id
         LEFT JOIN ${tables.product_discount} prod_discount ON prod.product_id = prod_discount.product_id
@@ -110,7 +111,8 @@ export default {
           MAX(cat_desc.name) AS level,
           MAX(cat_desc.description) AS category_description,
           MAX(prod_desc.tag) AS tags,
-          MAX(prod_to_cat.category_id) AS category_id
+          MAX(prod_to_cat.category_id) AS category_id,
+          MAX(LOWER(seo.keyword)) AS slug
         ${baseQuery}
         ${whereClause}
         GROUP BY prod.product_id
@@ -162,15 +164,53 @@ export default {
           prod_desc.tag AS tags,
           prod_desc.meta_description AS meta_description,
           prod_desc.meta_title AS meta_title,
-          prod_desc.meta_keyword AS meta_keyword
+          prod_desc.meta_keyword AS meta_keyword,
+          LOWER(seo.keyword) AS slug,
+          prod_to_cat.category_id AS category_id
         FROM ${tables.product} prod
         JOIN ${tables.product_description} prod_desc ON prod.product_id = prod_desc.product_id
+        JOIN ${tables.seo_url} seo ON prod.product_id = seo.value AND seo.key = 'product_id'
         LEFT JOIN ${tables.product_to_category} prod_to_cat ON prod.product_id = prod_to_cat.product_id
         LEFT JOIN ${tables.category_description} cat_desc ON prod_to_cat.category_id = cat_desc.category_id
         LEFT JOIN ${tables.product_discount} prod_discount ON prod.product_id = prod_discount.product_id
         WHERE prod.product_id = ?
       `;
       const [results]: any = await pool.query(query, [productId]);
+      return results[0];
+    } catch (error) {
+      console.error('[Model] Error fetching product by ID:', error);
+      throw error;
+    }
+  },
+  fetchProductBySlug: async (slug: number): Promise<any> => {
+    try {
+      const query = `
+        SELECT 
+          prod_desc.name AS title,
+          prod_desc.description AS description,
+          prod.*,
+          prod.product_id AS id,
+          prod_discount.price AS discount_price,
+          prod.image AS image,
+          prod.image AS imageUrl,
+          cat_desc.name AS category_name,
+          cat_desc.name AS level,
+          cat_desc.description AS category_description,
+          prod_desc.tag AS tags,
+          prod_desc.meta_description AS meta_description,
+          prod_desc.meta_title AS meta_title,
+          prod_desc.meta_keyword AS meta_keyword,
+          LOWER(seo.keyword) AS slug,
+          prod_to_cat.category_id AS category_id
+        FROM ${tables.product} prod
+        JOIN ${tables.product_description} prod_desc ON prod.product_id = prod_desc.product_id
+        JOIN ${tables.seo_url} seo ON prod.product_id = seo.value AND seo.key = 'product_id'
+        LEFT JOIN ${tables.product_to_category} prod_to_cat ON prod.product_id = prod_to_cat.product_id
+        LEFT JOIN ${tables.category_description} cat_desc ON prod_to_cat.category_id = cat_desc.category_id
+        LEFT JOIN ${tables.product_discount} prod_discount ON prod.product_id = prod_discount.product_id
+        WHERE seo.keyword = ?
+      `;
+      const [results]: any = await pool.query(query, [slug]);
       return results[0];
     } catch (error) {
       console.error('[Model] Error fetching product by ID:', error);
@@ -222,9 +262,13 @@ export default {
           prod.image AS imageUrl,
           MAX(cat_desc.name) AS category_name,
           MAX(cat_desc.name) AS level,
-          MAX(cat_desc.description) AS category_description
+          MAX(cat_desc.description) AS category_description,
+          MAX(prod_desc.tag) AS tags,
+          MAX(LOWER(seo.keyword)) AS slug,
+          MAX(prod_to_cat.category_id) AS category_id
         FROM ${tables.product} prod
         JOIN ${tables.product_description} prod_desc ON prod.product_id = prod_desc.product_id
+        JOIN ${tables.seo_url} seo ON prod.product_id = seo.value AND seo.key = 'product_id'
         LEFT JOIN ${tables.product_to_category} prod_to_cat ON prod.product_id = prod_to_cat.product_id
         LEFT JOIN ${tables.category_description} cat_desc ON prod_to_cat.category_id = cat_desc.category_id
         LEFT JOIN ${tables.product_discount} prod_discount ON prod.product_id = prod_discount.product_id
@@ -272,6 +316,7 @@ export default {
         FROM ${tables.product_related} prod_rel
         JOIN ${tables.product} prod ON prod_rel.related_id = prod.product_id
         JOIN ${tables.product_description} prod_desc ON prod.product_id = prod_desc.product_id
+        JOIN ${tables.seo_url} seo ON prod.product_id = seo.value AND seo.key = 'product_id'
         LEFT JOIN ${tables.product_to_category} prod_to_cat ON prod.product_id = prod_to_cat.product_id
         LEFT JOIN ${tables.category_description} cat_desc ON prod_to_cat.category_id = cat_desc.category_id
         LEFT JOIN ${tables.product_discount} prod_discount ON prod.product_id = prod_discount.product_id
@@ -332,7 +377,8 @@ export default {
           MAX(cat_desc.name) AS level,
           MAX(cat_desc.description) AS category_description,
           MAX(prod_desc.tag) AS tags,
-          MAX(prod_to_cat.category_id) AS category_id
+          MAX(prod_to_cat.category_id) AS category_id,
+          MAX(LOWER(seo.keyword)) AS slug
         ${baseQuery}
         ${whereClause}
         GROUP BY prod.product_id

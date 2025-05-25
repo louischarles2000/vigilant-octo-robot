@@ -13,5 +13,6 @@ export const tables = {
   article_description: 'oc_article_description',
   currency: 'oc_currency',
   setting: 'oc_setting',
-  product_related: 'oc_product_related'
+  product_related: 'oc_product_related',
+  seo_url: 'oc_seo_url',
 }
