@@ -3,7 +3,7 @@ import productsService, { FetchProductsParams } from '../../../models/products';
 export const productQueryControllers = {
     getAllProducts: async (req: any, res: any) => {
         try {
-          const params: FetchProductsParams = req.query;
+          const params = req.query;
           console.log('Params:', params);
           // Logic to get all products
           const products = await productsService.fetchAllProducts(params);
@@ -72,6 +72,14 @@ export const productQueryControllers = {
             res.status(200).json({ Message: `Related products with ID ${productId} fetched successfully`, Data: relatedProducts });
         } catch (error) {
             res.status(500).json({ error: "Failed to fetch related products" });
+        }
+    },
+    getProductSlugs: async (req: any, res: any) => {
+        try {
+            const productSlugs = await productsService.fetchAllSlugs();
+            res.status(200).json({ Message: "Product slugs fetched successfully", Data: productSlugs });
+        } catch (error) {
+            res.status(500).json({ error: "Failed to fetch product slugs" });
         }
     }
 };

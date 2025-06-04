@@ -9,6 +9,7 @@ router.get("/related/:id", productHandlers.productQueryControllers.getRelatedPro
 router.get("/:id", productHandlers.productQueryControllers.getProductById);
 router.get("/slug/:productSlug", productHandlers.productQueryControllers.getProductBySlug);
 router.get("/images/:id", productHandlers.productQueryControllers.getProductImages);
+router.get("/static/slugs", productHandlers.productQueryControllers.getProductSlugs);
 
 router.put("/update/:id", productHandlers.productMutationControllers.updateProduct);
 

@@ -121,14 +121,17 @@ export default {
       `;
       values.push(parseInt(limit+''), offset);
 
+      
       const countQuery = `
-        SELECT COUNT(*) as total
-        ${baseQuery}
-        ${whereClause}
+        SELECT COUNT(*) as total FROM (
+          SELECT DISTINCT prod.product_id
+          ${baseQuery}
+          ${whereClause}
+        ) AS sub
       `;
+      const [countResults]: any = await pool.query(countQuery, values.slice(0, -2)); // exclude limit & offset
       // console.log('Query:', query);
       const [results]: any = await pool.query(query, values);
-      const [countResults]: any = await pool.query(countQuery, values.slice(0, -2)); // exclude limit & offset
       const total = countResults[0].total;
       const totalPages = Math.ceil(total / limit);
       return {
@@ -214,6 +217,23 @@ export default {
       return results[0];
     } catch (error) {
       console.error('[Model] Error fetching product by ID:', error);
+      throw error;
+    }
+  },
+  fetchAllSlugs: async (): Promise<any> => {
+    try {
+      const query = `
+        SELECT 
+          LOWER(seo.keyword) AS slug
+        FROM ${tables.seo_url} seo
+        JOIN ${tables.product} prod ON seo.value = prod.product_id
+        WHERE seo.key = 'product_id' AND prod.status = 1
+        LIMIT 1000
+      `;
+      const [results]: any = await pool.query(query);
+      return results;
+    } catch (error) {
+      console.error('[Model] Error fetching slugs:', error);
       throw error;
     }
   },
