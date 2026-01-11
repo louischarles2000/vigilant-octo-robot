@@ -1,5 +1,5 @@
-import rolesQueryControllers from "./query";
+// import rolesQueryControllers from "./query";
 
 export default {
-    rolesQueryControllers
+    rolesQueryControllers: () => {},
 }

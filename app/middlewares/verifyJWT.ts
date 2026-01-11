@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
-import User from "../models/users";
+// import User from "../models/us";
 
 dotenv.config();
 
@@ -21,7 +21,14 @@ export const verifyJWT = async (req: any, res: Response, next: NextFunction): Pr
         req.email = decoded.email;
         req.token = accessToken;
 
-        const user = await User.findOne({ where: { email: req.email } });
+        // const user = await User.findOne({ where: { email: req.email } });
+        const user = {
+            id: 1,
+            first_name: "John",
+            last_name: "Doe",
+            email: req.email,
+            role_id: "admin"
+        }; // Mocked user for demonstration
 
         if (!user) {
             res.status(404).json({ message: 'User not found' });

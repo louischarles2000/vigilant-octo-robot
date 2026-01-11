@@ -1,5 +1,5 @@
-import authMutationController from "./mutation";
+// import authMutationController from "./mutation";
 
 export default {
-    authMutationController,
+    authMutationController: () => {},
 };

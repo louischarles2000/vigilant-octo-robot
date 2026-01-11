@@ -4,8 +4,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app/server.ts",
-    "start": "node app/server.ts"
+    "dev-server": "nodemon app/server.ts",
+    "start": "node app/server.js",
+    "build": "tsc",
+    "start-server": "node dist/app/server.js",
+    "dev": "nodemon app/server.ts"
   },
   "keywords": [],
   "author": "",
