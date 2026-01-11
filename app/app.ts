@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 // Create a write stream (in append mode) for the logs
-const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
+// const accessLogStream = fs.createWriteStream(path.join(__dirname, 'logs', 'access.log'), { flags: 'a' });
 
 // Use morgan middleware with the write stream
 // app.use(morgan('combined', { stream: accessLogStream }));
